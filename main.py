@@ -80,12 +80,41 @@ class SmoothTracker:
             if measurement_box is None:
                 return None, 0.0
             return self.initialize(frame, measurement_box),1.0
-        
+
         predicted=self.kf.predict()
         pcx,pcy=float(predicted[0]), float(predicted[1])
-        
+
         box=None
         tracker_conf=0.0
+
+        if self.tracker is not None:
+            try:
+                ok,candidate=self.tracker.update(frame)
+                if ok:
+                    box=tuple(map(int,candidate))
+                    tracker_conf=0.78
+            except Exception:
+                box=None
+
+        if measurement_box is not None:
+            mcx, mcy=self.__center(measurement_box)
+            jump=math.hypot(mcx-pcx, mcy-pcy)
+            max_jump=max(frame.shape[1], frame.shape[0]) *0.18
+            if box is None or jump<max_jump:
+                box=measurement_box
+                tracker_conf=max(tracker_conf, 0.92)
+
+        if box is None:
+            self.missed+=1
+            if self.last_box is not None and self.missed<=8:
+                x,y,w,h=self.last_box
+                dx,dy=pcx-self._center(self.last_box)[0], pcy-self._center(self.last_box)[1]
+                box=(x+dx, y+dy,w,h)
+                box=self._clip_box(box,frame.shap[1], frame.shape[0])
+                return box, max(0.25,0.72-self.missed*0.06)
+            self.active=False
+            return None, 0.0
         
         
+
 
