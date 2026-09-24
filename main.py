@@ -167,6 +167,35 @@ class CandidateDetector:
         for c in contours:
             x,y,cw,ch=cv2.boundingRect(c)
             area=cw*ch
+            if area <45 or area > (w*h*0.08):
+                continue
+            if cw < 6 or ch < 6:
+                continue
+            aspect= cw / max(ch,1)
+            if aspect < 0.25 or aspect >5.0:
+                continue
+
+            cx,cy=x+ cw/2,y+ch/2
+            compact=min(cw,ch) / max(cw,ch)
+            score=compact*0.5
+
+            if predicted_center is not None:
+                dist=math.hypot(cx-predicted_center[0], cy-predicted_center[1])
+                score+=max(0.0, 1.0-dist/max(w,h)) * 1.5
+
+            roi=gray[y:y+ch,x:x+cw]
+            if roi.size:
+                brightness=float(np.mean(roi)) / 255.0
+                score+=brightness * 0.35
+            
+            candidates.append((score, (x,y,cw,ch)))
+        
+        if not candidates:
+            return None
+        
+        candidates.sort(key=lambda item: item[0], reverse=True)
+        return candidates[0][1]
+                
 
 
 
