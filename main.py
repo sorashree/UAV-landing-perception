@@ -114,20 +114,20 @@ class SmoothTracker:
                 return box, max(0.25,0.72-self.missed*0.06)
             self.active=False
             return None, 0.0
-        
+
         self.missed=0
         box=self._clip_box(box,frame.shape[1], frame.shape[0])
         cx,cy=self._center(box)
-        
+
         self.kf.correct(np.array([[cx], [cy]], np.float32))
-        
+
         alpha=0.22
         if self.sx is None:
             self.sx, self.sy=cx,cy
         else:
             self.sx=(1-alpha) * self.sx+aplha*cx
             self.sy=(1-aplha) * self.sy+aplha*cy
-            
+
         x,y,bw,bh=box
         smoothed=(
             int(round(self.sx-bw/2)),
@@ -136,10 +136,19 @@ class SmoothTracker:
             bh,
         )
         smoothed=self._clip_box(smoothed, frame.shape[1], frame.shape[0])
-        
+
         self.last_box=smoothed
         return smoothed, min(0.99, tracker_conf+0.10)
+
+class CandidateDetector:
+    def __init__(self):
+        self.bg=cv2.createBackgroundSubtractorMOG2(
+            history=180, varThreshold=28, detectShadows=False
+        )
+        self.prev_gray=None
+        
     
+
 
 
 
