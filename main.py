@@ -78,4 +78,14 @@ class SmoothTracker:
     def update(self, frame, measurement_box=None):
         if not self.active:
             if measurement_box is None:
+                return None, 0.0
+            return self.initialize(frame, measurement_box),1.0
+        
+        predicted=self.kf.predict()
+        pcx,pcy=float(predicted[0]), float(predicted[1])
+        
+        box=None
+        tracker_conf=0.0
+        
+        
 
