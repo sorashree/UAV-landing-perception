@@ -187,15 +187,21 @@ class CandidateDetector:
             if roi.size:
                 brightness=float(np.mean(roi)) / 255.0
                 score+=brightness * 0.35
-            
+
             candidates.append((score, (x,y,cw,ch)))
-        
+
         if not candidates:
             return None
-        
+
         candidates.sort(key=lambda item: item[0], reverse=True)
         return candidates[0][1]
-                
+
+def draw_glow_line(img,p1,p2,thickness=2):
+    overlay=img.copy()
+    cv2.line(overlay,p1,p2,(60,220,255), thickness +8, cv2.LINE_AA)
+    cv2.addWeighted(overlay, 0.16,img,0.84,0,img)
+    cv2.line(img,p1,p2,(60,220,255), thickness, cv2.LINE_AA)
+    
 
 
 
