@@ -146,8 +146,28 @@ class CandidateDetector:
             history=180, varThreshold=28, detectShadows=False
         )
         self.prev_gray=None
-        
-    
+
+    def detect(self,frame, predicted_center=None):
+        h,w=frame.shapee[:2]
+        gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+
+        fg=self.bg.apply(frame)
+        fg=cv2.GaussianBlur(fg, (5,5),0)
+        _, fg=cv2.threshold(fg,70,255,cv2.THRESH_BINARY)
+        kernel=np.ones((3,3),np.uint8)
+        fg=cv2.morphologyEx(fg,cv2.MORPH_OPEN,kernel)
+        fg=cv2.dilate(fg,kernel,iterations=1)
+        fg=cv2.dilate(fg,kernel,iterations=1)
+
+        contours,_=cv2.findContours(
+            fg, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
+
+        candidates=[]
+        for c in contours:
+            x,y,cw,ch=cv2.boundingRect(c)
+            area=cw*ch
+
 
 
 
