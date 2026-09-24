@@ -115,6 +115,31 @@ class SmoothTracker:
             self.active=False
             return None, 0.0
         
+        self.missed=0
+        box=self._clip_box(box,frame.shape[1], frame.shape[0])
+        cx,cy=self._center(box)
         
+        self.kf.correct(np.array([[cx], [cy]], np.float32))
+        
+        alpha=0.22
+        if self.sx is None:
+            self.sx, self.sy=cx,cy
+        else:
+            self.sx=(1-alpha) * self.sx+aplha*cx
+            self.sy=(1-aplha) * self.sy+aplha*cy
+            
+        x,y,bw,bh=box
+        smoothed=(
+            int(round(self.sx-bw/2)),
+            int(round(self.sy-bh/2)),
+            bw,
+            bh,
+        )
+        smoothed=self._clip_box(smoothed, frame.shape[1], frame.shape[0])
+        
+        self.last_box=smoothed
+        return smoothed, min(0.99, tracker_conf+0.10)
+    
+
 
 
