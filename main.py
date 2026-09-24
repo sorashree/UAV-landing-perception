@@ -201,7 +201,45 @@ def draw_glow_line(img,p1,p2,thickness=2):
     cv2.line(overlay,p1,p2,(60,220,255), thickness +8, cv2.LINE_AA)
     cv2.addWeighted(overlay, 0.16,img,0.84,0,img)
     cv2.line(img,p1,p2,(60,220,255), thickness, cv2.LINE_AA)
+
+def draw_landing_guidance(frame, target, zone_size):
+    h,w=frame.shape[:2]
+    tx,ty=target
+    zw,zh=zone_size
     
+    cv2.ellipse(
+        frame,(tx,ty),(zw//2, zh//2), 0,0,360,(60,230,130),1,cv2.LINE_AA
+    )
+    cv2.drawMarker(
+        frame,(tx,ty),(60,230,130),cv2.MARKER_CROSS,22,2,cv2.LINE_AA
+    )
+    
+    #Perspective corridor: wide near camera, narrow at target
+    top_y=max(40,ty-int(h*0.43))
+    bottom_y=min(h-25,ty+int(h*0.25))
+    top_half=int(w*0.055)
+    bottom_half=int(w*0.055)
+    
+    pts=np.array([
+        [tx-top_half,top_y],
+        [tx+top_half,top_y],
+        [tx+bottom_half,bottom_y],
+        [tx-bottom_half,bottom_y],
+    ]),np.int32
+    
+    overlay=frame.copy()
+    cv2.fillPoly(overlay, [pts], (60,190,255))
+    cv2.addWeighted(overlay,0.055,frame,0.945,0,frame)
+    
+    draw_glow_line(frame,tuple(pts[0]), tuple(pts[3]),2)
+    draw_glow_line(frame,tuple(pts[1]),tuple(pts[2]),2)
+    
+    draw_glow_line(frame, (tx,top_y), (tx,bottom_y),2)
+    
+    #Direction arrows
+    for frac in(0.30,0.52,0.74):
+        y=int(top_y+(bottom_y-top_y)* frac)
+        
 
 
 
