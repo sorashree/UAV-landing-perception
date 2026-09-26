@@ -29,4 +29,12 @@ def hud(frame, tracking, confidence, alignment, distance, lateral, vertical, ang
     cv2.putText(
         frame, source, (20, h-18), cv2.FONT_HERSHEY_SIMPLEX,
         0.43, (165, 180, 190), 1, cv2.LINE_AA
+    
+    bx, by, bw, bh = w - 250, 24, 210, 12
+    cv2.rectangle(frame, (bx, by), (bx+bw, by+bh), (50, 65, 75), 1)
+    fill = int(np.clip(alignment, 0, 100) / 100 * (bw - 2))
+    cv2.rectangle(frame, (bx+1, by+1), (bx+1+fill, by+bh-1), status_color, -1)
+    cv2.putText(
+        frame, "ALIGNMENT", (bx, by+32), cv2.FONT_HERSHEY_SIMPLEX,
+        0.42, (180, 195, 205), 1, cv2.LINE_AA
     )
