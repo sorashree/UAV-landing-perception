@@ -240,13 +240,26 @@ def draw_landing_guidance(frame, target, zone_size):
     for frac in(0.30,0.52,0.74):
         y=int(top_y+(bottom_y-top_y)* frac)
         arrow_half=int(top_half+(bottom_half-top_half)*frac)
-        draw_glow_line(frame, (tx-arroe_half,y),(tx,y+12),2)
-        draw_glow_line(frame, (tx+arroe_half,y), (tx,y+12),2)
-    
+        draw_glow_line(frame, (tx-arrow_half,y),(tx,y+12),2)
+        draw_glow_line(frame, (tx+arrow_half,y), (tx,y+12),2)
+
     cv2.putText(
         frame, "VIRTUAL LANDING ZONE",(tx-110,ty+zh//2 +28),
         cv2.FONT_HERSHEY_SIMPLEX,0.52,(60,230,130),1,cv2.LINE_AA
     )
+
+def draw_drone_box(frame,box,confidence,tracking):
+    if box is None:
+        return
+    x,y,w,h=box
+    c=(70,235,150) if tracking else (50,170,240)
+
+    cv2.rectangle(frame,(x,y), (x+w, y+h),c,2,cv2.LINE_AA)
+    cx,cy=x+w//2,y+h//2
+    cv2.drawMarker(frame,(cx,cy),c, cv2.MARKER_CROSS,18,1,cv2.LINE_AA)
+    
+    
+    
 
 
 
