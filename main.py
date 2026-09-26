@@ -26,3 +26,7 @@ def hud(frame, tracking, confidence, alignment, distance, lateral, vertical, ang
             scale, color, 1, cv2.LINE_AA
         )
         y += 23 if i else 27
+    cv2.putText(
+        frame, source, (20, h-18), cv2.FONT_HERSHEY_SIMPLEX,
+        0.43, (165, 180, 190), 1, cv2.LINE_AA
+    )
