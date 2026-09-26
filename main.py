@@ -19,3 +19,10 @@ def hud(frame, tracking, confidence, alignment, distance, lateral, vertical, ang
         (f"VERTICAL     {vertical:+7.2f} m", (220, 230, 235), 0.48),
         (f"APPROACH     {angle:>7.1f} deg", (220, 230, 235), 0.48),
     ]
+    y = 42
+    for i, (txt, color, scale) in enumerate(lines):
+        cv2.putText(
+            frame, txt, (31, y), cv2.FONT_HERSHEY_SIMPLEX,
+            scale, color, 1, cv2.LINE_AA
+        )
+        y += 23 if i else 27
