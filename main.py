@@ -258,8 +258,12 @@ def draw_drone_box(frame,box,confidence,tracking):
     cx,cy=x+w//2,y+h//2
     cv2.drawMarker(frame,(cx,cy),c, cv2.MARKER_CROSS,18,1,cv2.LINE_AA)
     
-    
-    
+    label=f"DRONE {confidence*100:0.2.0f}%"
+    cv2.rectangle(frame,(x,max(0,y-24)), (x+112,y),c,-1)
+    cv2.putText(
+        frame,label,(x+6,y-7), cv2.FONT_HERSHEY_SIMPLEX,0.45,(10,20,25,1,cv2.LINE_AA)
+    )
+
 
 
 
